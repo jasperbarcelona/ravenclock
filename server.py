@@ -47,8 +47,16 @@ def initialize_timer():
 @app.route('/schedule/regular/update',methods=['GET','POST'])
 def update_regular_sched():
     data = flask.request.form.to_dict()
-
     return helper.change_regular_sched(data)
+
+
+@app.route('/schedule/irregular/get',methods=['GET','POST'])
+def irregular_sched():
+    api_key = flask.request.args.get('api_key')
+    month = flask.request.args.get('month')
+    day = flask.request.args.get('day')
+    year = flask.request.args.get('year')
+    return helper.get_irregular_schedule(api_key,month,day,year)
 
 
 @app.route('/events/get',methods=['GET','POST'])
@@ -66,4 +74,6 @@ def database_rebuild():
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(port=int(os.environ['PORT']), host='0.0.0.0',threaded=True)
+    app.run(threaded=True,port=3000)
+
+    #port=int(os.environ['PORT']), host='0.0.0.0',
