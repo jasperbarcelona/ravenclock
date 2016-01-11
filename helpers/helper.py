@@ -28,7 +28,7 @@ import json
 db = db.alchemy
 now = datetime.datetime.now()
 
-SYNC_URL = 'http://127.0.0.1:5000/schedule/sync'
+SYNC_URL = 'http://projectraven.herokuapp.com/schedule/sync'
 
 
 def get_schedule(sched_type,school_id):
