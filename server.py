@@ -18,7 +18,6 @@ import threading
 from werkzeug.datastructures import FileStorage
 from werkzeug import secure_filename
 import helpers.helper as helper
-import validations.validators as validate
 from time import sleep
 import requests
 import datetime
@@ -38,16 +37,24 @@ admin.add_view(IngAdmin(helper.Irregular, helper.db.session))
 admin.add_view(IngAdmin(helper.School, helper.db.session))
 
 
-@app.route('/',methods=['GET','POST'])
+@app.route('/schedule/sync',methods=['GET','POST'])
 def initialize_timer():
-    helper.start_sync_timer()
-    return 'running', 200
+    helper.sync_schedule()
+    return jsonify(status='success'),200
 
 
 @app.route('/schedule/regular/update',methods=['GET','POST'])
 def update_regular_sched():
-    data = flask.request.form.to_dict()
-    return helper.change_regular_sched(data)
+    api_key = flask.request.form.get('api_key')
+    schedule = flask.request.form.getlist('schedule')
+    return helper.change_regular_sched(api_key,schedule)
+
+
+@app.route('/schedule/irregular/new',methods=['GET','POST'])
+def new_irregular_sched():
+    data = flask.request.args.to_dict()
+    schedule = flask.request.form.to_dict()
+    return helper.save_irregular_schedule(data['api_key'],data['month'],data['day'],data['year'],schedule)
 
 
 @app.route('/schedule/irregular/get',methods=['GET','POST'])
@@ -57,6 +64,13 @@ def irregular_sched():
     day = flask.request.args.get('day')
     year = flask.request.args.get('year')
     return helper.get_irregular_schedule(api_key,month,day,year)
+
+
+@app.route('/schedule/regular/get',methods=['GET','POST'])
+def regular_sched():
+    api_key = flask.request.args.get('api_key')
+    day = flask.request.args.get('day')
+    return helper.get_regular_schedule(api_key,day)
 
 
 @app.route('/events/get',methods=['GET','POST'])
