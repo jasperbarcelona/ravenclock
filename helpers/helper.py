@@ -29,16 +29,18 @@ import calendar
 db = db.alchemy
 now = datetime.datetime.now()
 
-SYNC_URL = 'http://127.0.0.1:5000/schedule/sync'
+SYNC_URL = 'http://0.0.0.0:5000/schedule/sync'
 
 
 def get_schedule(sched_type,school_no):
+    school = School.query.filter_by(school_no=school_no).first()
     if sched_type == 'regular':
-        sched = Regular.query.filter_by(school_no=school_no).first()
+        sched = Regular.query.filter_by(school_no=school_no ,day=time.strftime('%A')).first()
     else:
         sched = Irregular.query.filter_by(school_no=school_no, date=time.strftime("%B %d, %Y")).first()
     data = {
             'school_no':school_no,
+            'api_key':school.api_key,
             'junior_kinder_morning_class': sched.junior_kinder_morning_class,
             'junior_kinder_afternoon_class': sched.junior_kinder_afternoon_class,
             'senior_kinder_morning_class': sched.senior_kinder_morning_class,
@@ -357,7 +359,7 @@ def get_irregular_schedule(api_key,month,day,year):
         ),201
 
 
-def get_regular_schedule(api_key,day):
+def get_regular_schedule(api_key):
     school = School.query.filter_by(api_key=api_key).first()
     monday_schedule = Regular.query.filter_by(school_no=school.school_no,day='Monday').first()
     tuesday_schedule = Regular.query.filter_by(school_no=school.school_no,day='Tuesday').first()

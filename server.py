@@ -37,10 +37,10 @@ admin.add_view(IngAdmin(helper.Irregular, helper.db.session))
 admin.add_view(IngAdmin(helper.School, helper.db.session))
 
 
-@app.route('/schedule/sync',methods=['GET','POST'])
-def initialize_timer():
-    helper.sync_schedule()
-    return jsonify(status='success'),200
+# @app.route('/schedule/sync',methods=['GET','POST'])
+# def initialize_timer():
+#     helper.sync_schedule()
+#     return jsonify(status='success'),200
 
 
 @app.route('/schedule/regular/update',methods=['GET','POST'])
@@ -69,8 +69,7 @@ def irregular_sched():
 @app.route('/schedule/regular/get',methods=['GET','POST'])
 def regular_sched():
     api_key = flask.request.args.get('api_key')
-    day = flask.request.args.get('day')
-    return helper.get_regular_schedule(api_key,day)
+    return helper.get_regular_schedule(api_key)
 
 
 @app.route('/events/get',methods=['GET','POST'])
@@ -87,7 +86,10 @@ def database_rebuild():
 
 
 if __name__ == '__main__':
+    # sleep(10)
+    helper.sync_schedule()
+    print 'working'
     app.debug = True
-    app.run(port=int(os.environ['PORT']), host='0.0.0.0',threaded=True)
+    app.run(port=int(os.environ['PORT']), host='0.0.0.0',threaded=True, use_reloader=False)
 
     #port=int(os.environ['PORT']), host='0.0.0.0',
